@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/services.dart'; // برای HapticFeedback
 
-// --- پکیج‌های پیشنهادی برای انیمیشن‌های خفن‌تر (در صورت تمایل اضافه و از کامنت خارج کنید) ---
-// import 'package:lottie/lottie.dart'; // برای انیمیشن‌های Lottie
-// import 'package:audioplayers/audioplayers.dart'; // برای افکت‌های صوتی
+// --- پکیج‌های پیشنهادی (باید به pubspec.yaml اضافه شوند) ---
+// import 'package:lottie/lottie.dart'; // flutter pub add lottie
+// import 'package:audioplayers/audioplayers.dart'; // flutter pub add audioplayers
+// import 'package:sensors_plus/sensors_plus.dart'; // flutter pub add sensors_plus (برای افکت لرزش با شتاب‌سنج - اختیاری)
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // برای تمام صفحه کردن اپ (اختیاری)
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(MyApp());
 }
 
@@ -17,36 +17,33 @@ void main() {
 // کلاس اصلی اپلیکیشن
 //**********************************************************************
 class MyApp extends StatelessWidget {
-  // تعریف پالت رنگی
-  static const Color primaryColor = Color(0xFF4285F4); // آبی گوگل
+  // پالت رنگی مشابه نسخه پیکسل گوگل با کمی تغییرات
+  static const Color primaryColor = Color(0xFF3A82F8); // آبی گوگل کمی روشن‌تر
   static const Color primaryVariantColor = Color(0xFF1A73E8);
   static const Color secondaryColor = Color(0xFF34A853); // سبز گوگل
   static const Color errorColor = Color(0xFFEA4335); // قرمز گوگل
-  static const Color backgroundColor = Color(0xFFF8F9FA);
+  static const Color backgroundColor = Color(0xFFF0F2F5); // پس‌زمینه روشن‌تر
   static const Color surfaceColor = Colors.white;
   static const Color onPrimaryColor = Colors.white;
-  static const Color onBackgroundColor = Color(0xFF202124);
+  static const Color onBackgroundColor = Color(0xFF1F2023); // متن تیره‌تر
   static const Color winColor = secondaryColor;
   static const Color drawColor = Color(0xFFFBBC04); // زرد گوگل
-  static const Color ChoiceButtonBackground = Color(
-    0xFFF1F3F4,
-  ); // رنگ پس‌زمینه دکمه انتخاب
+  static const Color choiceButtonBorder = Color(0xFFDADCE0);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'سنگ کاغذ قیچی',
+      title: 'سنگ کاغذ قیچی خفن',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily:
-            'Vazirmatn', // یا فونت فارسی دلخواه دیگر که به پروژه اضافه کرده‌اید
+        fontFamily: 'Vazirmatn',
         brightness: Brightness.light,
         primaryColor: primaryColor,
         colorScheme: ColorScheme.light(
           primary: primaryColor,
-          primaryContainer: primaryVariantColor, // سابقا primaryVariant
+          primaryContainer: primaryVariantColor,
           secondary: secondaryColor,
-          secondaryContainer: Color(0xFF188038), // سابقا secondaryVariant
+          secondaryContainer: Color(0xFF188038),
           background: backgroundColor,
           surface: surfaceColor,
           error: errorColor,
@@ -60,29 +57,32 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           backgroundColor: surfaceColor,
           foregroundColor: onBackgroundColor,
-          elevation: 2.0,
+          elevation: 1.5, // سایه کمتر
           titleTextStyle: TextStyle(
             fontFamily: 'Vazirmatn',
-            fontSize: 20,
+            fontSize: 21,
             fontWeight: FontWeight.w600,
             color: onBackgroundColor,
           ),
           iconTheme: IconThemeData(color: primaryColor),
+          systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Colors.transparent,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor, // background
-            foregroundColor: onPrimaryColor, // foreground
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            backgroundColor: primaryColor,
+            foregroundColor: onPrimaryColor,
+            padding: EdgeInsets.symmetric(horizontal: 26, vertical: 13),
             textStyle: TextStyle(
               fontFamily: 'Vazirmatn',
-              fontSize: 16,
+              fontSize: 16.5,
               fontWeight: FontWeight.w500,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            elevation: 3,
+            elevation: 2.5,
           ),
         ),
         textButtonTheme: TextButtonThemeData(
@@ -90,17 +90,17 @@ class MyApp extends StatelessWidget {
             foregroundColor: primaryColor,
             textStyle: TextStyle(
               fontFamily: 'Vazirmatn',
-              fontSize: 15,
+              fontSize: 15.5,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
         cardTheme: CardTheme(
-          elevation: 4.0,
+          elevation: 2.5,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
+            borderRadius: BorderRadius.circular(14.0),
           ),
-          margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+          margin: EdgeInsets.symmetric(vertical: 7.0),
           color: surfaceColor,
         ),
         chipTheme: ChipThemeData(
@@ -110,49 +110,52 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w500,
             fontFamily: 'Vazirmatn',
           ),
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 13, vertical: 9),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
           ),
-          secondarySelectedColor: secondaryColor, // برای انتخاب
-          selectedColor: primaryColor, // برای انتخاب
         ),
         textTheme: TextTheme(
-          // تعریف استایل‌های متن فارسی
           headlineSmall: TextStyle(
-            fontSize: 26.0,
+            fontSize: 27.0,
             fontWeight: FontWeight.bold,
             color: onBackgroundColor,
             fontFamily: 'Vazirmatn',
-          ), // headline5
+          ),
           titleLarge: TextStyle(
-            fontSize: 22.0,
+            fontSize: 23.0,
             fontWeight: FontWeight.w600,
             color: onBackgroundColor,
             fontFamily: 'Vazirmatn',
-          ), // headline6
+          ),
           bodyLarge: TextStyle(
-            fontSize: 17.0,
+            fontSize: 17.5,
             color: onBackgroundColor.withOpacity(0.8),
-            height: 1.6,
+            height: 1.55,
             fontFamily: 'Vazirmatn',
-          ), // bodyText1
+          ),
           bodyMedium: TextStyle(
-            fontSize: 15.0,
+            fontSize: 15.5,
             color: onBackgroundColor.withOpacity(0.7),
-            height: 1.5,
+            height: 1.45,
             fontFamily: 'Vazirmatn',
-          ), // bodyText2
+          ),
           labelLarge: TextStyle(
-            fontSize: 16.0,
+            fontSize: 16.5,
             fontWeight: FontWeight.w500,
             color: onPrimaryColor,
             fontFamily: 'Vazirmatn',
-          ), // button text
+          ),
+        ),
+        // انیمیشن انتقال صفحه نرم‌تر
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
         ),
       ),
       home: HomePage(),
-      // برای راست‌چین کردن کل برنامه
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
       },
@@ -161,7 +164,7 @@ class MyApp extends StatelessWidget {
 }
 
 //**********************************************************************
-// صفحه اصلی (مدیریت‌کننده صفحات دیگر)
+// صفحه اصلی (مدیریت‌کننده صفحات)
 //**********************************************************************
 class HomePage extends StatefulWidget {
   @override
@@ -170,14 +173,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   int _currentPageIndex = 0; // 0: Intro, 1: Game, 2: Rules, 3: About
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
+  late AnimationController _pageTransitionController;
+  late Animation<Offset> _slideAnimation;
 
   // --- صدا (اختیاری) ---
-  // final _audioPlayer = AudioPlayer();
-  // Future<void> _playSound(String assetPath) async {
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  // Future<void> _playSound(String assetPath, {double volume = 0.8}) async {
   //   try {
-  //     await _audioPlayer.play(AssetSource(assetPath));
+  //     await _audioPlayer.setVolume(volume);
+  //     await _audioPlayer.play(AssetSource(assetPath)); // مثال: 'sounds/ui_click.mp3'
   //   } catch (e) {
   //     print("Error playing sound: $e");
   //   }
@@ -186,15 +190,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(
+    _pageTransitionController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 350), // سرعت انتقال کمتر
     );
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(1.0, 0.0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _pageTransitionController,
+        curve: Curves.easeInOutCubic,
+      ),
     );
-    _fadeController.forward();
+
+    _pageTransitionController.forward(); // برای اولین صفحه
 
     // --- بارگذاری صداها (اختیاری) ---
     // _audioPlayer.setReleaseMode(ReleaseMode.stop);
@@ -202,20 +212,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _fadeController.dispose();
+    _pageTransitionController.dispose();
     // _audioPlayer.dispose();
     super.dispose();
   }
 
   void _navigateToPage(int index) {
     HapticFeedback.mediumImpact();
-    // _playSound('sounds/ui_tap.mp3'); // صدای کلیک
+    // _playSound('sounds/ui_transition.mp3');
     if (_currentPageIndex == index) return;
-    _fadeController.reverse().then((_) {
+
+    _pageTransitionController.reverse().then((_) {
       setState(() {
         _currentPageIndex = index;
       });
-      _fadeController.forward();
+      // تنظیم انیمیشن بر اساس جهت حرکت
+      _slideAnimation = Tween<Offset>(
+        begin: Offset(
+          index > _currentPageIndex ? 1.0 : -1.0,
+          0.0,
+        ), // اگر به صفحه جلوتر می‌رویم از راست، وگرنه از چپ
+        end: Offset.zero,
+      ).animate(
+        CurvedAnimation(
+          parent: _pageTransitionController,
+          curve: Curves.easeInOutCubic,
+        ),
+      );
+      _pageTransitionController.forward(from: 0.0);
     });
   }
 
@@ -224,7 +248,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       case 0:
         return IntroPage(onStartGame: () => _navigateToPage(1));
       case 1:
-        return RockPaperScissorsGame(); // صفحه بازی را مستقیم برمی‌گردانیم
+        return RockPaperScissorsGame();
       case 2:
         return RulesPage();
       case 3:
@@ -239,107 +263,77 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _currentPageIndex == 1 ? 'بازی سنگ، کاغذ، قیچی!' : 'خوش آمدید!',
+          _currentPageIndex == 1 ? 'بجنگ تا پیروز شی!' : 'سنگ، کاغذ، قیچی',
         ),
         centerTitle: true,
+        // افکت گرادیانت برای AppBar
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                MyApp.surfaceColor,
+                MyApp.primaryColor.withOpacity(0.05),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
         actions: [
-          if (_currentPageIndex != 0 &&
-              _currentPageIndex !=
-                  1) // دکمه بازگشت به خانه برای قوانین و درباره ما
+          if (_currentPageIndex != 0 && _currentPageIndex != 1)
             IconButton(
-              icon: Icon(Icons.home_filled, color: MyApp.primaryColor),
-              tooltip: "بازگشت به صفحه اصلی",
+              icon: Icon(Icons.home_outlined, color: MyApp.primaryColor),
+              tooltip: "بازگشت به خانه",
               onPressed: () => _navigateToPage(0),
             ),
-          if (_currentPageIndex ==
-              1) // دکمه‌های راهنما و درباره ما در صفحه بازی
-            PopupMenuButton<int>(
-              icon: Icon(Icons.more_vert_rounded, color: MyApp.primaryColor),
-              onSelected: (value) => _navigateToPage(value),
-              itemBuilder:
-                  (context) => [
-                    PopupMenuItem(
-                      value: 2,
-                      child: Row(
-                        children: [
-                          Icon(Icons.gavel_rounded, color: MyApp.primaryColor),
-                          SizedBox(width: 8),
-                          Text('قوانین بازی'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 3,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline_rounded,
-                            color: MyApp.primaryColor,
-                          ),
-                          SizedBox(width: 8),
-                          Text('درباره ما'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 0,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.exit_to_app_rounded,
-                            color: MyApp.errorColor,
-                          ),
-                          SizedBox(width: 8),
-                          Text('خروج از بازی'),
-                        ],
-                      ),
-                    ),
-                  ],
+          if (_currentPageIndex == 1)
+            IconButton(
+              icon: Icon(Icons.settings_outlined, color: MyApp.primaryColor),
+              tooltip: "تنظیمات (بزودی!)",
+              onPressed: () {
+                /* برای تنظیمات آینده */
+              },
             ),
         ],
       ),
-      body: FadeTransition(opacity: _fadeAnimation, child: _buildPage()),
-      bottomNavigationBar:
-          _currentPageIndex !=
-                  1 // نوار پایین برای صفحات غیر از بازی
-              ? BottomNavigationBar(
-                currentIndex:
-                    _currentPageIndex == 0
-                        ? 0
-                        : (_currentPageIndex == 2 ? 1 : 2), // تنظیم ایندکس صحیح
-                onTap: (index) {
-                  if (index == 0)
-                    _navigateToPage(0); // خانه
-                  else if (index == 1)
-                    _navigateToPage(2); // قوانین
-                  else if (index == 2)
-                    _navigateToPage(3); // درباره ما
-                },
-                backgroundColor: MyApp.surfaceColor,
-                selectedItemColor: MyApp.primaryColor,
-                unselectedItemColor: MyApp.onBackgroundColor.withOpacity(0.6),
-                selectedLabelStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Vazirmatn',
-                ),
-                unselectedLabelStyle: TextStyle(fontFamily: 'Vazirmatn'),
-                elevation: 8.0,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_rounded),
-                    label: 'خانه',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.gavel_rounded),
-                    label: 'قوانین',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.info_rounded),
-                    label: 'درباره',
-                  ),
-                ],
-              )
-              : null, // در صفحه بازی نوار پایین نداریم
+      body: SlideTransition(position: _slideAnimation, child: _buildPage()),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentPageIndex,
+        onTap: _navigateToPage,
+        backgroundColor: MyApp.surfaceColor,
+        selectedItemColor: MyApp.primaryColor,
+        unselectedItemColor: MyApp.onBackgroundColor.withOpacity(0.55),
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Vazirmatn',
+          fontSize: 12.5,
+        ),
+        unselectedLabelStyle: TextStyle(fontFamily: 'Vazirmatn', fontSize: 12),
+        type: BottomNavigationBarType.fixed, // برای نمایش همه لیبل‌ها
+        elevation: 5.0,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.rocket_launch_outlined),
+            activeIcon: Icon(Icons.rocket_launch),
+            label: 'شروع',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_esports_outlined),
+            activeIcon: Icon(Icons.sports_esports),
+            label: 'بازی',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.rule_folder_outlined),
+            activeIcon: Icon(Icons.rule_folder),
+            label: 'قوانین',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome_outlined),
+            activeIcon: Icon(Icons.auto_awesome),
+            label: 'درباره',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -347,124 +341,192 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 //**********************************************************************
 // صفحه معرفی (Intro)
 //**********************************************************************
-class IntroPage extends StatelessWidget {
+class IntroPage extends StatefulWidget {
   final VoidCallback onStartGame;
   IntroPage({required this.onStartGame});
 
   @override
+  _IntroPageState createState() => _IntroPageState();
+}
+
+class _IntroPageState extends State<IntroPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1200), // انیمیشن طولانی‌تر
+    )..forward();
+    _bounceAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.elasticOut,
+    ); // افکت فنری
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // --- انیمیشن Lottie خوش‌آمدگویی (اختیاری) ---
-          // SizedBox(
-          //   height: 180,
-          //   child: Lottie.asset('assets/animations/welcome_rps.json', fit: BoxFit.contain),
-          // ),
-          // یا یک تصویر گرافیکی:
-          Icon(
-            Icons.sports_esports_rounded,
-            size: 120,
-            color: MyApp.primaryColor.withOpacity(0.8),
-          ),
-          SizedBox(height: 24),
-          Text(
-            'به بازی سنگ، کاغذ، قیچی خوش آمدید!',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          SizedBox(height: 16),
-          Text(
-            'یک بازی کلاسیک و سرگرم‌کننده برای محک زدن شانس و استراتژی شما. آماده‌ای؟',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          SizedBox(height: 40),
-          ElevatedButton.icon(
-            icon: Icon(Icons.play_circle_fill_rounded, size: 28),
-            label: Text('بزن بریم شروع کنیم!', style: TextStyle(fontSize: 18)),
-            onPressed: onStartGame,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: MyApp.secondaryColor,
-              padding: EdgeInsets.symmetric(vertical: 16),
+    return Container(
+      decoration: BoxDecoration(
+        // گرادیانت برای پس‌زمینه صفحه معرفی
+        gradient: LinearGradient(
+          colors: [MyApp.backgroundColor, MyApp.primaryColor.withOpacity(0.15)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(28.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ScaleTransition(
+              scale: _bounceAnimation,
+              // --- استفاده از Lottie برای آیکون اصلی (پیشنهادی) ---
+              // child: SizedBox(
+              //   height: 160,
+              //   child: Lottie.asset('assets/lottie/rps_main_icon.json'),
+              // ),
+              // یا آیکون فعلی:
+              child: Icon(
+                Icons.emoji_people_rounded,
+                size: 130,
+                color: MyApp.primaryColor,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 28),
+            ScaleTransition(
+              scale: _bounceAnimation,
+              child: Text(
+                'بازی افسانه‌ای سنگ، کاغذ، قیچی!',
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineSmall?.copyWith(color: MyApp.primaryColor),
+              ),
+            ),
+            SizedBox(height: 18),
+            FadeTransition(
+              // انیمیشن محو شدن برای متن توضیحات
+              opacity: CurvedAnimation(
+                parent: _animationController,
+                curve: Interval(0.3, 1.0, curve: Curves.easeIn),
+              ),
+              child: Text(
+                'یه نبرد ذهنی نفس‌گیر! آماده‌ای که هوش و شانس خودت رو به چالش بکشی و حریف رو شکست بدی؟',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+            SizedBox(height: 45),
+            ScaleTransition(
+              scale: CurvedAnimation(
+                parent: _animationController,
+                curve: Interval(0.5, 1.0, curve: Curves.elasticOut),
+              ),
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.flash_on_rounded, size: 28),
+                label: Text(
+                  'بریم که بترکونیم!',
+                  style: TextStyle(fontSize: 18.5),
+                ),
+                onPressed: () {
+                  HapticFeedback.heavyImpact();
+                  // _playSound('sounds/start_game_button.mp3', volume: 1.0);
+                  widget.onStartGame();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MyApp.secondaryColor,
+                  padding: EdgeInsets.symmetric(vertical: 18),
+                  elevation: 5,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 //**********************************************************************
-// صفحه قوانین (Rules)
+// صفحات قوانین و درباره ما (مشابه قبل با کمی تغییرات ظاهری)
 //**********************************************************************
 class RulesPage extends StatelessWidget {
+  /* ... کد مشابه قبل، فقط استایل‌ها از Theme می‌آیند ... */
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(22.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'قوانین بازی چطوریه؟ 🤔',
+            'قوانین بازی چیه؟ 📜',
             style: textTheme.titleLarge?.copyWith(color: MyApp.primaryColor),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 18),
           _buildRuleItem(
             context,
             '🪨',
-            'سنگ',
-            'قیچی رو میشکنه!',
-            Icons.hardware_rounded,
+            'سنگ کبیر',
+            'قیچی رو در هم می‌شکنه!',
+            Icons.fitness_center_rounded,
           ),
           _buildRuleItem(
             context,
             '📄',
-            'کاغذ',
-            'سنگ رو میپوشونه!',
-            Icons.article_rounded,
+            'کاغذ جادویی',
+            'سنگ رو قورت میده!',
+            Icons.menu_book_rounded,
           ),
           _buildRuleItem(
             context,
             '✂️',
-            'قیچی',
-            'کاغذ رو میبره!',
-            Icons.content_cut_rounded,
+            'قیچی تیز',
+            'کاغذ رو رشته رشته می‌کنه!',
+            Icons.cut_rounded,
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 22),
           Text(
-            'نکات بازی:',
+            'چطور برنده بشیم؟',
             style: textTheme.titleLarge?.copyWith(
-              fontSize: 18,
+              fontSize: 19,
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 10),
           _buildTipItem(
             context,
-            'انتخاب کنید: یکی از سه گزینه سنگ، کاغذ یا قیچی رو انتخاب کن.',
+            'هر بازیکن در هر دور یکی از سه گزینه (سنگ، کاغذ، یا قیچی) را انتخاب می‌کند.',
           ),
           _buildTipItem(
             context,
-            'نتیجه: برنده کسیه که انتخابش بر حریف غلبه کنه.',
+            'برنده کسی است که انتخابش بر انتخاب حریف غلبه کند (طبق قوانین بالا).',
           ),
           _buildTipItem(
             context,
-            'مساوی: اگه هر دو یک گزینه رو انتخاب کنید، نتیجه مساویه و دور تکرار نمیشه (مگر اینکه خودتون بخواید دوباره بازی کنید).',
+            'در صورت انتخاب گزینه‌های یکسان، نتیجه مساوی خواهد بود.',
           ),
           _buildTipItem(
             context,
-            'امتیازدهی: هر برد یک امتیاز داره. ببینیم کی بیشتر امتیاز میگیره!',
+            'سعی کن حرکت بعدی حریف رو حدس بزنی! البته اگه حریفت کامپیوتر نباشه 😉',
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 28),
           Center(
             child: Text(
-              '✨ موفق و پیروز باشی! ✨',
+              '🚀 برو برای قهرمانی! 🚀',
               style: textTheme.bodyLarge?.copyWith(
                 color: MyApp.secondaryColor,
                 fontWeight: FontWeight.bold,
@@ -485,25 +547,24 @@ class RulesPage extends StatelessWidget {
   ) {
     return Card(
       elevation: 2,
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 9),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18.0),
         child: Row(
           children: [
-            Text(emoji, style: TextStyle(fontSize: 36)),
-            SizedBox(width: 16),
+            Text(emoji, style: TextStyle(fontSize: 38)),
+            SizedBox(width: 18),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 5),
                   Text(
                     description,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -511,7 +572,7 @@ class RulesPage extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(icon, size: 30, color: MyApp.primaryColor.withOpacity(0.7)),
+            Icon(icon, size: 32, color: MyApp.primaryColor.withOpacity(0.75)),
           ],
         ),
       ),
@@ -520,16 +581,16 @@ class RulesPage extends StatelessWidget {
 
   Widget _buildTipItem(BuildContext context, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 7.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            Icons.check_circle_outline_rounded,
-            size: 20,
+            Icons.star_border_purple500_outlined,
+            size: 22,
             color: MyApp.secondaryColor,
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 12),
           Expanded(
             child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
           ),
@@ -539,79 +600,50 @@ class RulesPage extends StatelessWidget {
   }
 }
 
-//**********************************************************************
-// صفحه درباره ما (About)
-//**********************************************************************
 class AboutPage extends StatelessWidget {
+  /* ... کد مشابه قبل، فقط استایل‌ها از Theme می‌آیند ... */
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(22.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // --- لوگو یا انیمیشن Lottie (اختیاری) ---
-          // SizedBox(
-          //   height: 120,
-          //   child: Lottie.asset('assets/animations/developer_icon.json'),
-          // ),
-          // یا:
+          // --- Lottie برای لوگوی درباره ما (پیشنهادی) ---
+          // SizedBox(height: 130, child: Lottie.asset('assets/lottie/about_us_animation.json')),
           CircleAvatar(
-            radius: 50,
-            backgroundColor: MyApp.primaryColor.withOpacity(0.1),
+            radius: 55,
+            backgroundColor: MyApp.primaryColor.withOpacity(0.08),
             child: Icon(
-              Icons.sentiment_very_satisfied_rounded,
-              size: 60,
+              Icons.sentiment_satisfied_alt_rounded,
+              size: 65,
               color: MyApp.primaryColor,
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 22),
           Text(
-            'درباره این بازی باحال 😎',
+            'پشت صحنه این بازی خفن 🎬',
             style: textTheme.titleLarge?.copyWith(color: MyApp.primaryColor),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 18),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(18.0),
               child: Text(
-                'این بازی سنگ، کاغذ، قیچی با عشق و فلاتر توسط گروه احسان محمدی ساخته شده! هدف ما ایجاد یک تجربه سرگرم‌کننده و روان با طراحی مدرن متریال بود. امیدواریم از بازی لذت ببرید.\n\nنسخه: 1.0.0 - Pixel Edition\n\nایده‌ها و پیشنهادات شما همیشه مورد استقبال ماست.',
+                'این بازی با کلی ذوق و با استفاده از فریم‌ورک قدرتمند فلاتر توسط "توسعه‌دهنده خلاق شما" ساخته شده. هدفمون این بود که یه بازی ساده ولی خیلی سرگرم‌کننده و باحال بسازیم که لبخند رو لبتون بیاره.\n\nنسخه: 2.1 - Ultra Fun Edition\n\nهر گونه بازخورد یا ایده‌ای دارید، خوشحال میشیم بشنویم!',
                 textAlign: TextAlign.center,
                 style: textTheme.bodyLarge,
               ),
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 22),
           Text(
-            'ساخته شده با:',
-            style: textTheme.titleLarge?.copyWith(fontSize: 18),
+            'تکنولوژی مورد استفاده:',
+            style: textTheme.titleMedium?.copyWith(fontSize: 19),
           ),
-          SizedBox(height: 8),
-          FlutterLogo(size: 60),
-          SizedBox(height: 24),
-          Text(
-            'ما رو دنبال کنید (الکی مثلاً 😉):',
-            style: textTheme.bodyMedium,
-          ),
-          SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.alternate_email_rounded,
-                  color: MyApp.primaryColor,
-                ),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.public_rounded, color: MyApp.primaryColor),
-                onPressed: () {},
-              ),
-            ],
-          ),
+          SizedBox(height: 10), FlutterLogo(size: 65), SizedBox(height: 28),
         ],
       ),
     );
@@ -619,7 +651,7 @@ class AboutPage extends StatelessWidget {
 }
 
 //**********************************************************************
-// صفحه اصلی بازی سنگ، کاغذ، قیچی
+// صفحه اصلی بازی سنگ، کاغذ، قیچی (با آپشن‌های خفن)
 //**********************************************************************
 class RockPaperScissorsGame extends StatefulWidget {
   @override
@@ -628,136 +660,173 @@ class RockPaperScissorsGame extends StatefulWidget {
 
 class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
     with TickerProviderStateMixin {
-  String? _playerChoiceEmoji;
-  String? _computerChoiceEmoji;
-  String _resultText = 'انتخاب کن تا بازی شروع بشه!';
+  String? _playerChoiceKey; // کلید انتخاب بازیکن (🪨, 📄, ✂️)
+  String? _computerChoiceKey;
+  String _resultText = 'گزینه‌ات رو انتخاب کن قهرمان!';
   Color _resultColor = MyApp.onBackgroundColor;
+  String _resultLottiePath = ''; // مسیر انیمیشن نتیجه Lottie
 
   int _userWins = 0;
   int _computerWins = 0;
   int _draws = 0;
+  int _streakCount = 0; // شمارنده بردهای متوالی
 
   final List<Map<String, String>> _history = [];
 
+  // مسیرهای انیمیشن Lottie برای انتخاب‌ها
   final Map<String, Map<String, dynamic>> _choices = {
     '🪨': {
       'label': 'سنگ',
-      'icon': Icons.brightness_1_outlined,
-    }, // استفاده از آیکون به جای ایموجی در دکمه
-    '📄': {'label': 'کاغذ', 'icon': Icons.wysiwyg_rounded},
-    '✂️': {'label': 'قیچی', 'icon': Icons.content_cut_outlined},
+      'lottie': 'assets/lottie/rock_play.json',
+      'win_lottie': 'assets/lottie/rock_wins.json',
+    },
+    '📄': {
+      'label': 'کاغذ',
+      'lottie': 'assets/lottie/paper_play.json',
+      'win_lottie': 'assets/lottie/paper_wins.json',
+    },
+    '✂️': {
+      'label': 'قیچی',
+      'lottie': 'assets/lottie/scissors_play.json',
+      'win_lottie': 'assets/lottie/scissors_wins.json',
+    },
   };
 
-  // --- انیمیشن کنترلرها ---
-  late AnimationController _resultAnimationController;
+  // مسیرهای انیمیشن Lottie برای نتایج کلی
+  final Map<String, String> _resultLotties = {
+    'win': 'assets/lottie/player_wins_overall.json',
+    'lose': 'assets/lottie/player_loses_overall.json',
+    'draw': 'assets/lottie/draw_overall.json',
+  };
+
+  late AnimationController _resultDisplayController; // برای نمایش نتیجه کلی
   late Animation<double> _resultScaleAnimation;
   late AnimationController _choiceButtonController;
   late AnimationController _scoreUpdateController;
   late Animation<double> _scoreScaleAnimation;
+  late AnimationController _streakController; // برای انیمیشن شمارنده برد متوالی
 
   // --- صدا (اختیاری) ---
-  // final _audioPlayerGame = AudioPlayer();
-  // Future<void> _playGameSound(String assetPath) async {
+  // final AudioPlayer _gameAudioPlayer = AudioPlayer();
+  // Future<void> _playGameSound(String assetPath, {double volume = 0.7}) async {
   //   try {
-  //     await _audioPlayerGame.play(AssetSource(assetPath));
-  //   } catch (e) {
-  //     print("Error playing game sound: $e");
-  //   }
+  //     await _gameAudioPlayer.setVolume(volume);
+  //     await _gameAudioPlayer.play(AssetSource(assetPath));
+  //   } catch (e) { print("Error playing game sound: $e"); }
   // }
 
   @override
   void initState() {
     super.initState();
-    _resultAnimationController = AnimationController(
+    _resultDisplayController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 800),
     );
     _resultScaleAnimation = CurvedAnimation(
-      parent: _resultAnimationController,
+      parent: _resultDisplayController,
       curve: Curves.elasticOut,
     );
 
     _choiceButtonController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 150),
+      duration: Duration(milliseconds: 120),
     );
     _scoreUpdateController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 350),
     );
     _scoreScaleAnimation = CurvedAnimation(
       parent: _scoreUpdateController,
       curve: Curves.bounceOut,
     );
 
+    _streakController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+    _streakController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) _streakController.reverse();
+    });
     // --- بارگذاری صداهای بازی (اختیاری) ---
-    // _audioPlayerGame.setReleaseMode(ReleaseMode.stop);
+    // _gameAudioPlayer.setReleaseMode(ReleaseMode.stop);
   }
 
   @override
   void dispose() {
-    _resultAnimationController.dispose();
+    _resultDisplayController.dispose();
     _choiceButtonController.dispose();
     _scoreUpdateController.dispose();
-    // _audioPlayerGame.dispose();
+    _streakController.dispose();
+    // _gameAudioPlayer.dispose();
     super.dispose();
   }
 
-  void _playGame(String playerEmoji) {
+  void _playGame(String playerChoiceKey) {
     HapticFeedback.heavyImpact();
-    // _playGameSound('sounds/player_choice.mp3');
+    // _playGameSound('sounds/choice_selected_${playerChoiceKey == '🪨' ? 'rock' : (playerChoiceKey == '📄' ? 'paper' : 'scissors')}.mp3');
 
     final random = Random();
-    final compEmoji = _choices.keys.toList()[random.nextInt(3)];
+    final computerChoiceKey = _choices.keys.toList()[random.nextInt(3)];
 
     String gameResultText;
     Color gameResultColor;
-    String resultEmoji = '';
+    String resultType = ''; // 'win', 'lose', 'draw'
 
     int prevUserWins = _userWins;
     int prevComputerWins = _computerWins;
     int prevDraws = _draws;
 
-    if (playerEmoji == compEmoji) {
-      gameResultText = 'مساوی شد! 🤝';
+    if (playerChoiceKey == computerChoiceKey) {
+      gameResultText = 'مساوی شدیم! 🤝 دوباره تلاش کن.';
       gameResultColor = MyApp.drawColor;
-      resultEmoji = '🤝';
+      resultType = 'draw';
       _draws++;
-      // _playGameSound('sounds/draw_sound.mp3');
-    } else if ((playerEmoji == '🪨' && compEmoji == '✂️') ||
-        (playerEmoji == '📄' && compEmoji == '🪨') ||
-        (playerEmoji == '✂️' && compEmoji == '📄')) {
-      gameResultText = 'تو بردی! 🎉';
+      setState(() {
+        _streakCount = 0;
+      }); // ریست بردهای متوالی
+      // _playGameSound('sounds/round_draw.mp3');
+    } else if ((playerChoiceKey == '🪨' && computerChoiceKey == '✂️') ||
+        (playerChoiceKey == '📄' && computerChoiceKey == '🪨') ||
+        (playerChoiceKey == '✂️' && computerChoiceKey == '📄')) {
+      gameResultText = 'ایول! تو بردی این دور رو! 🎉';
       gameResultColor = MyApp.winColor;
-      resultEmoji = '🎉';
+      resultType = 'win';
       _userWins++;
-      // _playGameSound('sounds/win_sound.mp3');
+      setState(() {
+        _streakCount++;
+      });
+      _streakController.forward(from: 0.0); // انیمیشن برای شمارنده برد
+      // _playGameSound('sounds/round_win.mp3');
     } else {
-      gameResultText = 'کامپیوتر برد! 😬';
+      gameResultText = 'اخ! کامپیوتر این دور رو برد. 😬';
       gameResultColor = MyApp.errorColor;
-      resultEmoji = '😬';
+      resultType = 'lose';
       _computerWins++;
-      // _playGameSound('sounds/lose_sound.mp3');
+      setState(() {
+        _streakCount = 0;
+      });
+      // _playGameSound('sounds/round_lose.mp3');
     }
 
     setState(() {
-      _playerChoiceEmoji = playerEmoji;
-      _computerChoiceEmoji = compEmoji;
+      _playerChoiceKey = playerChoiceKey;
+      _computerChoiceKey = computerChoiceKey;
       _resultText = gameResultText;
       _resultColor = gameResultColor;
+      _resultLottiePath =
+          _resultLotties[resultType]!; // تنظیم انیمیشن نتیجه کلی
+
       _history.insert(0, {
-        'player': playerEmoji,
-        'computer': compEmoji,
-        'result': resultEmoji,
-        'player_label': _choices[playerEmoji]!['label'] as String,
-        'computer_label': _choices[compEmoji]!['label'] as String,
+        'player': playerChoiceKey,
+        'computer': computerChoiceKey,
+        'result': resultType,
+        'player_label': _choices[playerChoiceKey]!['label'] as String,
+        'computer_label': _choices[computerChoiceKey]!['label'] as String,
       });
-      if (_history.length > 5) _history.removeLast(); // محدود کردن تاریخچه
+      if (_history.length > 5) _history.removeLast();
     });
 
-    _resultAnimationController.forward(from: 0.0);
-
-    // انیمیشن برای آپدیت امتیاز
+    _resultDisplayController.forward(from: 0.0);
     if (_userWins != prevUserWins ||
         _computerWins != prevComputerWins ||
         _draws != prevDraws) {
@@ -767,77 +836,84 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
 
   void _resetRound() {
     HapticFeedback.lightImpact();
+    // _playGameSound('sounds/reset_round.mp3');
     setState(() {
-      _playerChoiceEmoji = null;
-      _computerChoiceEmoji = null;
-      _resultText = 'دوباره انتخاب کن!';
+      _playerChoiceKey = null;
+      _computerChoiceKey = null;
+      _resultText = 'یه دور دیگه؟ انتخاب کن!';
       _resultColor = MyApp.onBackgroundColor;
+      _resultLottiePath = '';
     });
   }
 
   void _resetGameStats() {
-    HapticFeedback.mediumImpact();
-    // _playGameSound('sounds/reset_all_game.mp3');
+    HapticFeedback.vibrate(); // لرزش متفاوت برای ریست کلی
+    // _playGameSound('sounds/reset_all_stats.mp3', volume: 1.0);
     setState(() {
       _userWins = 0;
       _computerWins = 0;
       _draws = 0;
+      _streakCount = 0;
       _history.clear();
       _resetRound();
-      _resultText = 'بازی از نو شروع شد!';
+      _resultText = 'بازی از اول شروع شد! بزن بریم.';
     });
   }
 
-  Widget _buildChoiceButton(String emojiKey) {
-    final choiceData = _choices[emojiKey]!;
-    final bool isSelected =
-        _playerChoiceEmoji == emojiKey &&
-        _computerChoiceEmoji != null; // انتخاب شده و نتیجه آمده
+  Widget _buildChoiceButton(String choiceKey) {
+    final choiceData = _choices[choiceKey]!;
+    final bool isEnabled =
+        _playerChoiceKey == null; // دکمه‌ها فقط قبل از انتخاب فعالند
 
     return Expanded(
       child: GestureDetector(
-        onTapDown: (_) => _choiceButtonController.forward(),
-        onTapUp: (_) => _choiceButtonController.reverse(),
-        onTapCancel: () => _choiceButtonController.reverse(),
-        onTap: () => _playGame(emojiKey),
+        onTapDown: isEnabled ? (_) => _choiceButtonController.forward() : null,
+        onTapUp: isEnabled ? (_) => _choiceButtonController.reverse() : null,
+        onTapCancel: isEnabled ? () => _choiceButtonController.reverse() : null,
+        onTap: isEnabled ? () => _playGame(choiceKey) : null,
         child: ScaleTransition(
-          scale: Tween<double>(
-            begin: 1.0,
-            end: 0.92,
-          ).animate(_choiceButtonController),
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            margin: EdgeInsets.symmetric(horizontal: 6),
-            padding: EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: MyApp.ChoiceButtonBackground,
-              borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(
-                color: isSelected ? MyApp.primaryColor : Colors.grey.shade300,
-                width: isSelected ? 2.5 : 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(isSelected ? 0.15 : 0.08),
-                  blurRadius: isSelected ? 8 : 5,
-                  offset: Offset(0, isSelected ? 4 : 2),
-                ),
-              ],
+          scale: Tween<double>(begin: 1.0, end: 0.92).animate(
+            CurvedAnimation(
+              parent: _choiceButtonController,
+              curve: Curves.easeOutSine,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(emojiKey, style: TextStyle(fontSize: 38)),
-                SizedBox(height: 8),
-                Text(
-                  choiceData['label'] as String,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: MyApp.onBackgroundColor.withOpacity(0.9),
+          ),
+          child: Card(
+            elevation: 3.5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+              side: BorderSide(color: MyApp.choiceButtonBorder, width: 1.2),
+            ),
+            color:
+                isEnabled
+                    ? MyApp.surfaceColor
+                    : Colors.grey.shade300.withOpacity(0.7),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 12.0,
+                horizontal: 8.0,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // --- استفاده از Lottie برای نمایش انتخاب (پیشنهادی) ---
+                  // SizedBox(
+                  //   height: 65, width: 65,
+                  //   child: Lottie.asset(choiceData['lottie'] as String, animate: false /* انیمیشن فقط موقع انتخاب */),
+                  // ),
+                  // ایموجی فعلی:
+                  Text(choiceKey, style: TextStyle(fontSize: 34)),
+                  SizedBox(height: 6),
+                  Text(
+                    choiceData['label'] as String,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: isEnabled ? MyApp.onPrimaryColor : Colors.grey.shade600,
+                      fontSize: 13.5,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -848,71 +924,87 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
   Widget _buildScoreChip(
     String label,
     int score,
-    Color color, {
+    Color color,
+    IconData icon, {
     bool animate = false,
   }) {
     Widget content = Chip(
-      avatar: CircleAvatar(
-        backgroundColor: color.withOpacity(0.8),
-        child: Text(
-          '$score',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-      ),
-      label: Text(label),
-      backgroundColor: color.withOpacity(0.15),
+      avatar: Icon(icon, color: color.withOpacity(0.9), size: 20),
+      label: Text('$label: $score'),
+      backgroundColor: color.withOpacity(0.1),
       labelStyle: TextStyle(
         color: color,
         fontWeight: FontWeight.w600,
         fontFamily: 'Vazirmatn',
+        fontSize: 13.5,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      elevation: 1,
     );
-
-    if (animate) {
+    if (animate)
       return ScaleTransition(scale: _scoreScaleAnimation, child: content);
-    }
     return content;
   }
 
-  Widget _buildPlayerDisplay(String title, String? emoji, Color bgColor) {
+  Widget _buildPlayerDisplayAnimated(
+    String title,
+    String? choiceKey,
+    Color bgColor,
+  ) {
+    final choiceData = choiceKey != null ? _choices[choiceKey!] : null;
     return Column(
       children: [
         Text(
           title,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 10),
-        AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color:
-                emoji != null
-                    ? bgColor.withOpacity(0.15)
-                    : Colors.grey.shade200,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: emoji != null ? bgColor : Colors.grey.shade300,
-              width: 2.5,
-            ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.5,
           ),
-          child: Center(
-            child:
-                emoji != null
-                    ? Text(emoji, style: TextStyle(fontSize: 40))
-                    : Icon(
-                      Icons.hourglass_empty_rounded,
-                      size: 30,
-                      color: Colors.grey.shade400,
-                    ),
+        ),
+        SizedBox(height: 8),
+        AnimatedSwitcher(
+          // انیمیشن برای تغییر انتخاب
+          duration: Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return ScaleTransition(scale: animation, child: child);
+          },
+          child: Container(
+            key: ValueKey<String?>(choiceKey), // کلید برای تشخیص تغییر
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color:
+                  choiceKey != null
+                      ? bgColor.withOpacity(0.08)
+                      : Colors.grey.shade200,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: choiceKey != null ? bgColor : Colors.grey.shade300,
+                width: 2.8,
+              ),
+              boxShadow:
+                  choiceKey != null
+                      ? [
+                        BoxShadow(
+                          color: bgColor.withOpacity(0.25),
+                          blurRadius: 7,
+                          spreadRadius: 0.5,
+                        ),
+                      ]
+                      : [],
+            ),
+            child: Center(
+              child:
+                  choiceKey != null
+                      // --- استفاده از Lottie برای نمایش انتخاب بازیکن/کامپیوتر (پیشنهادی) ---
+                      // ? Lottie.asset(choiceData!['lottie'] as String, width: 70, height: 70, fit: BoxFit.contain)
+                      ? Text(choiceKey, style: TextStyle(fontSize: 40))
+                      : Icon(
+                        Icons.question_mark_rounded,
+                        size: 30,
+                        color: Colors.grey.shade400,
+                      ),
+            ),
           ),
         ),
       ],
@@ -922,166 +1014,256 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    // افکت گرادیانت متحرک برای پس‌زمینه (اختیاری و کمی سنگین‌تر)
+    // final _backgroundGradient = LinearGradient(
+    //   colors: _playerChoiceKey == null
+    //       ? [MyApp.backgroundColor, MyApp.primaryColor.withOpacity(0.05)]
+    //       : (_resultColor == MyApp.winColor
+    //           ? [MyApp.winColor.withOpacity(0.1), MyApp.winColor.withOpacity(0.3)]
+    //           : (_resultColor == MyApp.errorColor
+    //               ? [MyApp.errorColor.withOpacity(0.1), MyApp.errorColor.withOpacity(0.3)]
+    //               : [MyApp.drawColor.withOpacity(0.1), MyApp.drawColor.withOpacity(0.3)])),
+    //   begin: Alignment.topLeft,
+    //   end: Alignment.bottomRight,
+    // );
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // امتیازات
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildScoreChip(
-                'شما 🎉',
-                _userWins,
-                MyApp.winColor,
-                animate: true,
-              ),
-              _buildScoreChip(
-                'مساوی 🤝',
-                _draws,
-                MyApp.drawColor,
-                animate: true,
-              ),
-              _buildScoreChip(
-                'کامپیوتر 😬',
-                _computerWins,
-                MyApp.errorColor,
-                animate: true,
-              ),
-            ],
-          ),
-          SizedBox(height: 24),
-
-          // نمایش انتخاب‌ها
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Scaffold(
+      // appBar در HomePage مدیریت می‌شود
+      body: /* AnimatedContainer( // برای گرادیانت متحرک
+        duration: Duration(milliseconds: 700),
+        decoration: BoxDecoration(gradient: _backgroundGradient),
+        child: */ SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(
+          16.0,
+          20.0,
+          16.0,
+          16.0,
+        ), // پدینگ بالا بیشتر
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // امتیازات و شمارنده برد متوالی
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPlayerDisplay(
-                  'انتخاب شما',
-                  _playerChoiceEmoji,
-                  MyApp.primaryColor,
-                ),
-                ScaleTransition(
-                  // انیمیشن برای نتیجه کلی
-                  scale: _resultScaleAnimation,
-                  child: Icon(
-                    Icons.compare_arrows_rounded,
-                    size: 36,
-                    color: _resultColor,
+                Expanded(
+                  child: _buildScoreChip(
+                    'شما',
+                    _userWins,
+                    MyApp.winColor,
+                    Icons.emoji_events_rounded,
+                    animate: true,
                   ),
                 ),
-                _buildPlayerDisplay(
-                  'انتخاب کامپیوتر',
-                  _computerChoiceEmoji,
-                  MyApp.errorColor,
+                SizedBox(width: 8),
+                Expanded(
+                  child: _buildScoreChip(
+                    'مساوی',
+                    _draws,
+                    MyApp.drawColor,
+                    Icons.handshake_rounded,
+                    animate: true,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: _buildScoreChip(
+                    'حریف',
+                    _computerWins,
+                    MyApp.errorColor,
+                    Icons.computer_rounded,
+                    animate: true,
+                  ),
                 ),
               ],
             ),
-          ),
-          SizedBox(height: 16),
+            if (_streakCount > 1) // فقط اگر بیشتر از یک برد متوالی باشد
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Center(
+                  child: ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: _streakController,
+                      curve: Curves.elasticOut,
+                    ),
+                    child: Chip(
+                      label: Text(
+                        '$_streakCount برد متوالی! 🔥',
+                        style: TextStyle(
+                          color: MyApp.secondaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      backgroundColor: MyApp.secondaryColor.withOpacity(0.15),
+                      avatar: Icon(
+                        Icons.local_fire_department_rounded,
+                        color: MyApp.secondaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            SizedBox(height: 22),
 
-          // نمایش متن نتیجه
-          ScaleTransition(
-            scale: _resultScaleAnimation,
-            child: Text(
+            // نمایش انتخاب‌ها و نتیجه (با انیمیشن Lottie)
+            Container(
+              height: 220, // ارتفاع ثابت برای نمایش انیمیشن‌های نتیجه
+              child: Stack(
+                // استفاده از Stack برای همپوشانی انیمیشن نتیجه
+                alignment: Alignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildPlayerDisplayAnimated(
+                        'انتخاب شما',
+                        _playerChoiceKey,
+                        MyApp.primaryColor,
+                      ),
+                      SizedBox(width: 20), // فضای بیشتر برای انیمیشن وسط
+                      _buildPlayerDisplayAnimated(
+                        'انتخاب حریف',
+                        _computerChoiceKey,
+                        MyApp.errorColor,
+                      ),
+                    ],
+                  ),
+                  if (_resultLottiePath.isNotEmpty)
+                    ScaleTransition(
+                      scale: _resultScaleAnimation,
+                      // --- نمایش انیمیشن نتیجه کلی (پیشنهادی) ---
+                      // child: Lottie.asset(_resultLottiePath, height: 180, width: 180, fit: BoxFit.contain),
+                      // یا آیکون نتیجه فعلی:
+                      child: Icon(
+                        _resultLottiePath.contains('win')
+                            ? Icons.celebration_rounded
+                            : _resultLottiePath.contains('lose')
+                            ? Icons.sentiment_very_dissatisfied_rounded
+                            : Icons.sync_problem_rounded,
+                        size: 80,
+                        color: _resultColor,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            SizedBox(height: 12),
+
+            // نمایش متن نتیجه
+            Text(
               _resultText,
               textAlign: TextAlign.center,
               style: textTheme.titleLarge?.copyWith(
                 color: _resultColor,
                 fontWeight: FontWeight.bold,
+                fontSize: 19,
               ),
             ),
-          ),
-          SizedBox(height: 24),
+            SizedBox(height: 22),
 
-          // دکمه‌های انتخاب
-          if (_playerChoiceEmoji ==
-              null) // فقط وقتی هنوز انتخابی نشده یا دور ریست شده
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children:
-                  _choices.keys.map((key) => _buildChoiceButton(key)).toList(),
-            )
-          else // دکمه بازی مجدد دور
-            ElevatedButton.icon(
-              icon: Icon(Icons.refresh_rounded),
-              label: Text('بازی مجدد این دور'),
-              onPressed: _resetRound,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MyApp.secondaryColor,
+            // دکمه‌های انتخاب یا دکمه بازی مجدد
+            if (_playerChoiceKey == null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildChoiceButton('🪨'),
+                  SizedBox(width: 10),
+                  _buildChoiceButton('📄'),
+                  SizedBox(width: 10),
+                  _buildChoiceButton('✂️'),
+                ],
+              )
+            else
+              ElevatedButton.icon(
+                icon: Icon(Icons.autorenew_rounded),
+                label: Text('یه دست دیگه؟', style: TextStyle(fontSize: 17)),
+                onPressed: _resetRound,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: MyApp.secondaryColor,
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                ),
               ),
-            ),
-          SizedBox(height: 20),
+            SizedBox(height: 18),
 
-          // تاریخچه بازی
-          if (_history.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'آخرین نتایج:',
-                  style: textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
+            // تاریخچه بازی
+            if (_history.isNotEmpty)
+              ExpansionTile(
+                // استفاده از ExpansionTile برای جمع و جور کردن تاریخچه
+                tilePadding: EdgeInsets.symmetric(horizontal: 8),
+                iconColor: MyApp.primaryColor,
+                collapsedIconColor: MyApp.primaryColor,
+                title: Text(
+                  'مشاهده تاریخچه ۵ دور اخیر',
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 8),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: _history.length,
-                  itemBuilder: (context, index) {
-                    final item = _history[index];
-                    Color histResultColor = MyApp.onBackgroundColor;
-                    if (item['result'] == '🎉')
-                      histResultColor = MyApp.winColor;
-                    else if (item['result'] == '😬')
-                      histResultColor = MyApp.errorColor;
-                    else if (item['result'] == '🤝')
-                      histResultColor = MyApp.drawColor;
-
-                    return Card(
-                      elevation: 1.5,
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      child: ListTile(
-                        leading: Text(
-                          item['player']!,
-                          style: TextStyle(fontSize: 28),
+                children:
+                    _history.map((item) {
+                      Color histResultColor = MyApp.onBackgroundColor;
+                      String resultIcon = '';
+                      if (item['result'] == 'win') {
+                        histResultColor = MyApp.winColor;
+                        resultIcon = '🎉';
+                      } else if (item['result'] == 'lose') {
+                        histResultColor = MyApp.errorColor;
+                        resultIcon = '😬';
+                      } else if (item['result'] == 'draw') {
+                        histResultColor = MyApp.drawColor;
+                        resultIcon = '🤝';
+                      }
+                      return Card(
+                        elevation: 0.8,
+                        margin: EdgeInsets.symmetric(
+                          vertical: 3,
+                          horizontal: 6,
                         ),
-                        title: Text(
-                          'شما: ${item['player_label']} مقابل کامپیوتر: ${item['computer_label']}',
-                          style: textTheme.bodyMedium?.copyWith(fontSize: 13.5),
-                        ),
-                        trailing: Text(
-                          item['result']!,
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: histResultColor,
+                        color: MyApp.surfaceColor.withOpacity(0.8),
+                        child: ListTile(
+                          dense: true,
+                          leading: Text(
+                            item['player']!,
+                            style: TextStyle(fontSize: 22),
+                          ),
+                          title: Text(
+                            'شما: ${item['player_label']} | حریف: ${item['computer_label']}',
+                            style: textTheme.bodySmall?.copyWith(
+                              fontSize: 12.5,
+                            ),
+                          ),
+                          trailing: Text(
+                            resultIcon,
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: histResultColor,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 12),
-              ],
-            ),
+                      );
+                    }).toList(),
+              ),
+            SizedBox(height: 12),
 
-          // دکمه ریست کامل بازی
-          TextButton.icon(
-            icon: Icon(Icons.delete_sweep_rounded, color: MyApp.errorColor),
-            label: Text(
-              'شروع مجدد کل بازی',
-              style: TextStyle(color: MyApp.errorColor),
+            TextButton.icon(
+              icon: Icon(
+                Icons.replay_circle_filled_outlined,
+                color: MyApp.errorColor.withOpacity(0.8),
+              ),
+              label: Text(
+                'شروع مجدد کل بازی',
+                style: TextStyle(
+                  color: MyApp.errorColor.withOpacity(0.8),
+                  fontSize: 14.5,
+                ),
+              ),
+              onPressed: _resetGameStats,
             ),
-            onPressed: _resetGameStats,
-          ),
-          SizedBox(height: 10), // فضای اضافی در پایین
-        ],
+            SizedBox(height: 8),
+          ],
+        ),
       ),
+      // ),
     );
   }
 }
