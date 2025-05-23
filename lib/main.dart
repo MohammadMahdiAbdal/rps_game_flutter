@@ -1,24 +1,52 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'; // Material برای برخی رنگ‌ها و آیکون‌ها می‌تواند مفید باشد
 import 'dart:math';
+
+// --- برای Lottie (باید پکیج را اضافه کنید: flutter_lottie و در pubspec.yaml تعریف کنید) ---
+// import 'package:lottie/lottie.dart';
+
+// --- برای صدا (باید پکیج را اضافه کنید: audioplayers و در pubspec.yaml تعریف کنید) ---
+// import 'package:audioplayers/audioplayers.dart';
+
+// --- برای بازخورد لمسی (باید پکیج را اضافه کنید: flutter_haptic_feedback و در pubspec.yaml تعریف کنید) ---
+// import 'package:flutter_haptic_feedback/flutter_haptic_feedback.dart';
 
 void main() => runApp(MyApp());
 
+//**********************************************************************
+// کلاس اصلی اپلیکیشن
+//**********************************************************************
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
+      // استفاده از CupertinoApp برای ظاهر iOS
       title: 'سنگ کاغذ قیچی',
-      theme: ThemeData(
+      theme: CupertinoThemeData(
+        // تم پایه کوپرتینو
         brightness: Brightness.light,
-        fontFamily: 'sans',
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        primaryColor: CupertinoColors.systemTeal,
+        // برای فونت پیش‌فرض iOS نیازی به تنظیم خاصی نیست، CupertinoApp آن را مدیریت می‌کند.
       ),
       debugShowCheckedModeBanner: false,
       home: HomePage(),
+      // برای فارسی سازی کل برنامه اگر از localizations استفاده می‌کنید:
+      // localizationsDelegates: [
+      //   GlobalMaterialLocalizations.delegate,
+      //   GlobalWidgetsLocalizations.delegate,
+      //   GlobalCupertinoLocalizations.delegate,
+      // ],
+      // supportedLocales: [
+      //   const Locale('fa', ''), // فارسی
+      // ],
+      // locale: const Locale('fa', ''), // تنظیم زبان پیش‌فرض به فارسی
     );
   }
 }
 
+//**********************************************************************
+// صفحه اصلی که مدیریت صفحات معرفی، قوانین، درباره و بازی را بر عهده دارد
+//**********************************************************************
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -26,32 +54,79 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
   int _currentPage = 0; // 0 = Intro, 1 = Rules, 2 = About, 3 = Game
 
+  // --- نمونه‌ای برای پلیر صدا ---
+  // final _audioPlayer = AudioPlayer();
+  // Future<void> _playSound(String assetName) async {
+  //   // await _audioPlayer.play(AssetSource(assetName)); // مسیر فایل صوتی از assets
+  // }
+
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 600),
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 500),
       vsync: this,
     );
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
-
-    _controller.forward();
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
+    );
+    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
+    // _audioPlayer.dispose();
     super.dispose();
+  }
+
+  void _navigateToPage(int pageIndex) {
+    // --- اضافه کردن بازخورد لمسی ---
+    // HapticFeedback.mediumImpact();
+    setState(() {
+      _currentPage = pageIndex;
+      _animationController.reset(); // ریست کردن انیمیشن برای اجرای مجدد
+      _animationController.forward();
+    });
+  }
+
+  Widget _buildCupertinoButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color backgroundColor = CupertinoColors.systemTeal,
+    Color foregroundColor = CupertinoColors.white,
+    EdgeInsets padding = const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 12,
+    ),
+  }) {
+    return CupertinoButton(
+      color: backgroundColor,
+      padding: padding,
+      borderRadius: BorderRadius.circular(20),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: foregroundColor),
+          SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: foregroundColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildIntroPage() {
@@ -65,82 +140,62 @@ class _HomePageState extends State<HomePage>
               'بازی سنگ، کاغذ، قیچی!',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 30, // کمی کوچکتر برای تناسب بهتر
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: CupertinoColors.systemTeal,
               ),
             ),
           ),
-          SizedBox(height: 40),
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                _currentPage = 3;
-              });
-            },
-            icon: Icon(Icons.play_arrow),
-            label: Text('شروع بازی'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal.shade400,
-              padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
+          SizedBox(height: 25),
+          // --- اینجا می‌توانید یک انیمیشن Lottie برای خوشامدگویی اضافه کنید ---
+          // SizedBox(
+          //   height: 120,
+          //   width: 120,
+          //   child: Lottie.asset('assets/animations/rps_welcome.json'), // مسیر انیمیشن لاتی
+          // ),
+          SizedBox(height: 35),
+          ScaleTransition(
+            scale: _scaleAnimation,
+            child: _buildCupertinoButton(
+              label: 'شروع بازی',
+              icon: CupertinoIcons.play_arrow_solid,
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              onPressed: () {
+                // _playSound('sounds/start_game.mp3');
+                _navigateToPage(3);
+              },
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 25),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center, // دکمه ها در وسط
             children: [
-              Expanded(
-                child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.2, 0.5, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 1;
-                      });
-                    },
-                    icon: Icon(Icons.rule),
-                    label: Text('قوانین'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade300,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+              Flexible(
+                // استفاده از Flexible برای جلوگیری از سرریز شدن در صفحات کوچک
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: _buildCupertinoButton(
+                      label: 'قوانین',
+                      icon: CupertinoIcons.book_solid,
+                      backgroundColor: CupertinoColors.systemOrange,
+                      onPressed: () => _navigateToPage(1),
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: 10),
-              Expanded(
-                child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.3, 0.6, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 2;
-                      });
-                    },
-                    icon: Icon(Icons.info_outline),
-                    label: Text('درباره ما'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey.shade300,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: _buildCupertinoButton(
+                      label: 'درباره ما',
+                      icon: CupertinoIcons.info_circle_fill,
+                      backgroundColor: CupertinoColors.systemGrey2,
+                      foregroundColor: CupertinoColors.black,
+                      onPressed: () => _navigateToPage(2),
                     ),
                   ),
                 ),
@@ -154,6 +209,8 @@ class _HomePageState extends State<HomePage>
 
   Widget buildRulesPage() {
     return SingleChildScrollView(
+      // برای محتوای طولانی‌تر
+      padding: EdgeInsets.all(20),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -163,79 +220,41 @@ class _HomePageState extends State<HomePage>
               child: Text(
                 'قوانین بازی',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.indigo,
+                  color: CupertinoColors.systemIndigo,
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 25),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Text(
                 '۱. هر بازیکن یکی از سه گزینه را انتخاب می‌کند: \n\n'
-                '🪨 سنگ > ✂️ قیچی\n'
-                '📄 کاغذ > 🪨 سنگ\n'
-                '✂️ قیچی > 📄 کاغذ\n\n'
-                '۲. برنده کسی است که گزینه او بر گزینه حریف غلبه کند.\n\n'
-                '۳. در صورت تساوی، دور مجدد انجام می‌شود.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                '🪨 سنگ: قیچی را می‌شکند.\n'
+                '📄 کاغذ: سنگ را می‌پوشاند.\n'
+                '✂️ قیچی: کاغذ را می‌برد.\n\n'
+                '۲. برنده کسی است که گزینه او بر گزینه حریف غلبه کند.\n'
+                '۳. در صورت انتخاب گزینه‌های یکسان، نتیجه مساوی است.\n\n'
+                '✨ موفق باشید! ✨',
+                textAlign: TextAlign.right, // برای متن فارسی بهتر است
+                style: TextStyle(
+                  fontSize: 17,
+                  color: CupertinoColors.secondaryLabel,
+                  height: 1.6,
+                ),
               ),
             ),
-            SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.4, 0.7, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 0;
-                      });
-                    },
-                    icon: Icon(Icons.arrow_back),
-                    label: Text('بازگشت'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-                ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.5, 0.8, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 2;
-                      });
-                    },
-                    icon: Icon(Icons.info_outline),
-                    label: Text('درباره ما'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            SizedBox(height: 35),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: _buildCupertinoButton(
+                label: 'بازگشت به منو',
+                icon: CupertinoIcons.arrow_left_circle_fill,
+                backgroundColor: CupertinoColors.systemGrey3,
+                foregroundColor: CupertinoColors.black,
+                onPressed: () => _navigateToPage(0),
+              ),
             ),
           ],
         ),
@@ -245,6 +264,8 @@ class _HomePageState extends State<HomePage>
 
   Widget buildAboutPage() {
     return SingleChildScrollView(
+      // برای محتوای طولانی‌تر
+      padding: EdgeInsets.all(20),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -252,79 +273,47 @@ class _HomePageState extends State<HomePage>
             ScaleTransition(
               scale: _scaleAnimation,
               child: Text(
-                'درباره ما',
+                'درباره بازی',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange,
+                  color: CupertinoColors.systemOrange,
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 25),
+            // --- اینجا می‌توانید یک انیمیشن Lottie یا تصویر برای "درباره ما" اضافه کنید ---
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(15.0),
+            //   child: Image.asset('assets/images/developer_logo.png', width: 100), // مثال
+            // ),
+            // SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Text(
-                'این بازی توسط گروه احسان محمدی فوق‌العاده عالی 😎 با Flutter نوشته شده!\n\n'
-                'نسخه: 0.1.0\n'
-                'ساخته شده باحرفه‌ای‌ترین حالت ممکن\n'
-                'ممنون از نگاه‌داشتن این بازی و حمایت شما!\n\n',
+                'بازی "سنگ، کاغذ، قیچی"\n'
+                'نسخه: 1.0.0 (iOS Style)\n\n'
+                'طراحی و توسعه با Flutter توسط تیم شما!\n'
+                'ما به ساختن تجربیات سرگرم‌کننده و جذاب اعتقاد داریم. از اینکه بازی ما را انتخاب کردید سپاسگزاریم.\n\n'
+                'با آرزوی لحظاتی خوش! 😊',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                style: TextStyle(
+                  fontSize: 17,
+                  color: CupertinoColors.secondaryLabel,
+                  height: 1.6,
+                ),
               ),
             ),
-            SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.4, 0.7, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 0;
-                      });
-                    },
-                    icon: Icon(Icons.arrow_back),
-                    label: Text('بازگشت'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-                ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Interval(0.5, 0.8, curve: Curves.easeOutBack),
-                    ),
-                  ),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _currentPage = 1;
-                      });
-                    },
-                    icon: Icon(Icons.rule),
-                    label: Text('قوانین'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            SizedBox(height: 35),
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: _buildCupertinoButton(
+                label: 'بازگشت به منو',
+                icon: CupertinoIcons.arrow_left_circle_fill,
+                backgroundColor: CupertinoColors.systemGrey3,
+                foregroundColor: CupertinoColors.black,
+                onPressed: () => _navigateToPage(0),
+              ),
             ),
           ],
         ),
@@ -334,32 +323,44 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    // اگر صفحه بازی فعال است، ویجت RockPaperScissorsGame را برگردان
     if (_currentPage == 3) {
       return RockPaperScissorsGame(
         onBackToMenu: () {
-          setState(() {
-            _currentPage = 0;
-          });
+          _navigateToPage(0);
         },
       );
     }
 
+    // در غیر این صورت، یکی از صفحات معرفی، قوانین یا درباره ما را نمایش بده
     return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.cyan.shade50,
-        body: Padding(
-          padding: const EdgeInsets.all(32.0),
+      textDirection: TextDirection.rtl, // برای پشتیبانی از راست به چپ
+      child: CupertinoPageScaffold(
+        backgroundColor: Color(0xFFF0F0F5), // یک رنگ پس‌زمینه iOS مانند روشن‌تر
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical: 30.0,
+          ), // پدینگ بیشتر
           child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 400),
-            layoutBuilder:
-                (widget, list) => Stack(children: [widget!, ...list]),
-            child:
-                _currentPage == 0
-                    ? buildIntroPage()
-                    : _currentPage == 1
-                    ? buildRulesPage()
-                    : buildAboutPage(),
+            duration: Duration(milliseconds: 350), // سرعت انیمیشن تغییر صفحه
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              // انیمیشن محو شدن و مقیاس برای تغییر صفحات
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(scale: animation, child: child),
+              );
+            },
+            child: KeyedSubtree(
+              // برای اینکه AnimatedSwitcher درست کار کند با تغییر ویجت‌ها
+              key: ValueKey<int>(_currentPage),
+              child:
+                  _currentPage == 0
+                      ? buildIntroPage()
+                      : _currentPage == 1
+                      ? buildRulesPage()
+                      : buildAboutPage(),
+            ),
           ),
         ),
       ),
@@ -367,7 +368,9 @@ class _HomePageState extends State<HomePage>
   }
 }
 
-// --- صفحه اصلی بازی ---
+//**********************************************************************
+// صفحه اصلی بازی سنگ، کاغذ، قیچی
+//**********************************************************************
 class RockPaperScissorsGame extends StatefulWidget {
   final VoidCallback onBackToMenu;
 
@@ -379,12 +382,13 @@ class RockPaperScissorsGame extends StatefulWidget {
 
 class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
     with SingleTickerProviderStateMixin {
-  String _playerChoice = '';
-  String _computerChoice = '';
-  String _result = '';
+  String _playerChoiceEmoji = '';
+  String _computerChoiceEmoji = '';
+  String _resultText = '';
 
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _gameAnimationController;
+  late Animation<double> _scaleAnimation; // برای انیمیشن دکمه‌ها و نتیجه
+  late Animation<Offset> _slideAnimation; // برای نمایش انتخاب‌ها
 
   int _userWins = 0;
   int _computerWins = 0;
@@ -398,125 +402,164 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
     '✂️': 'قیچی',
   };
 
+  // --- نمونه‌ای برای پلیر صدا ---
+  // final _audioPlayerGame = AudioPlayer();
+  // Future<void> _playGameSound(String assetName) async {
+  //   // await _audioPlayerGame.play(AssetSource(assetName));
+  // }
+
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 600),
+    _gameAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 450), // سرعت انیمیشن کمی بیشتر
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _gameAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _gameAnimationController,
+        curve: Curves.easeOutBack,
+      ),
+    );
   }
 
-  void _playGame(String emoji) {
+  void _playGame(String playerEmoji) {
+    // --- بازخورد لمسی برای انتخاب ---
+    // HapticFeedback.lightImpact();
+    // --- پخش صدای انتخاب ---
+    // _playGameSound('sounds/select_choice.mp3');
+
     final random = Random();
     final compEmoji = _choices.keys.toList()[random.nextInt(3)];
 
-    String result;
-    if (emoji == compEmoji) {
-      result = 'مساوی شد!';
+    String gameResult;
+    Color resultColor;
+
+    if (playerEmoji == compEmoji) {
+      gameResult = 'مساوی شد!';
       _draws++;
-    } else if ((emoji == '🪨' && compEmoji == '✂️') ||
-        (emoji == '📄' && compEmoji == '🪨') ||
-        (emoji == '✂️' && compEmoji == '📄')) {
-      result = 'شما بردید 🎉';
+      resultColor = CupertinoColors.systemOrange;
+      // _playGameSound('sounds/draw.mp3');
+    } else if ((playerEmoji == '🪨' && compEmoji == '✂️') ||
+        (playerEmoji == '📄' && compEmoji == '🪨') ||
+        (playerEmoji == '✂️' && compEmoji == '📄')) {
+      gameResult = 'شما بردید 🎉';
       _userWins++;
+      resultColor = CupertinoColors.systemGreen;
+      // _playGameSound('sounds/win.mp3');
+      // --- اینجا می‌توانید انیمیشن Lottie برای برد پخش کنید ---
     } else {
-      result = 'کامپیوتر برد 😢';
+      gameResult = 'کامپیوتر برد 😢';
       _computerWins++;
+      resultColor = CupertinoColors.systemRed;
+      // _playGameSound('sounds/lose.mp3');
+      // --- اینجا می‌توانید انیمیشن Lottie برای باخت پخش کنید ---
     }
 
     setState(() {
-      _playerChoice = emoji;
-      _computerChoice = compEmoji;
-      _result = result;
-      _history.insert(0, "$emoji - $compEmoji ➜ $result");
+      _playerChoiceEmoji = playerEmoji;
+      _computerChoiceEmoji = compEmoji;
+      _resultText = gameResult;
+      // افزودن به تاریخچه با جزئیات بیشتر
+      final playerHand = _choices[playerEmoji];
+      final computerHand = _choices[compEmoji];
+      _history.insert(
+        0,
+        "شما: $playerHand ($playerEmoji) | کامپیوتر: $computerHand ($compEmoji) 👈 $gameResult",
+      );
+      if (_history.length > 7) {
+        // محدود کردن تاریخچه به ۷ مورد اخیر
+        _history.removeLast();
+      }
     });
 
-    _controller.forward(from: 0);
+    _gameAnimationController.reset();
+    _gameAnimationController.forward();
   }
 
-  void _resetGame() {
+  void _resetRound() {
+    // HapticFeedback.selectionClick();
     setState(() {
-      _playerChoice = '';
-      _computerChoice = '';
-      _result = '';
+      _playerChoiceEmoji = '';
+      _computerChoiceEmoji = '';
+      _resultText = '';
     });
-    _controller.forward(from: 0);
   }
 
-  void _clearAll() {
+  void _resetGameStats() {
+    // HapticFeedback.heavyImpact();
+    // _playGameSound('sounds/reset_all.mp3');
     setState(() {
       _userWins = 0;
       _computerWins = 0;
       _draws = 0;
       _history.clear();
-      _playerChoice = '';
-      _computerChoice = '';
-      _result = '';
+      _resetRound(); // همچنین دور فعلی را ریست کن
     });
-    _controller.forward(from: 0);
   }
 
   Widget _buildChoiceButton(String emoji, String label) {
-    final bool isSelected = _playerChoice == emoji;
     return Expanded(
       child: GestureDetector(
         onTap: () => _playGame(emoji),
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 300),
-          margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.cyan.shade100 : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade300),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 6,
-                offset: Offset(0, 3),
+        child: ScaleTransition(
+          // انیمیشن برای دکمه‌ها هنگام انتخاب
+          scale:
+              _scaleAnimation, // استفاده از انیمیشن موجود، یا یک انیمیشن جدید برای هاور
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 150),
+            margin: EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 4,
+            ), // فاصله کمتر
+            padding: EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 10,
+            ), // پدینگ داخلی
+            decoration: BoxDecoration(
+              color: CupertinoColors.white,
+              borderRadius: BorderRadius.circular(18), // گردی بیشتر
+              border: Border.all(
+                color: CupertinoColors.systemGrey4,
+                width: 1.5,
               ),
-            ],
-          ),
-          child: Column(
-            children: [
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color:
-                        isSelected
-                            ? Colors.teal.shade400
-                            : Colors.grey.shade200,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+              boxShadow: [
+                BoxShadow(
+                  color: CupertinoColors.systemGrey.withOpacity(0.12),
+                  blurRadius: 6,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  emoji,
+                  style: TextStyle(fontSize: 38),
+                ), // اندازه ایموجی کمی کوچکتر
+                SizedBox(height: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13, // فونت کمی کوچکتر
+                    fontWeight: FontWeight.w500,
+                    color: CupertinoColors.label,
                   ),
-                  child: Text(emoji, style: TextStyle(fontSize: 48)),
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -525,240 +568,353 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
 
   Widget _buildCounter(String label, int count, Color color) {
     return Expanded(
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Chip(
-          backgroundColor: color.withOpacity(0.2),
-          label: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(label, style: TextStyle(color: color)),
-              SizedBox(width: 4),
-              Text('$count', style: TextStyle(color: color)),
-            ],
-          ),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 5,
+        ), // پدینگ کمی بیشتر
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1), // شفافیت کمتر برای خوانایی
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ), // فونت پررنگ‌تر
+            ),
+            SizedBox(height: 3),
+            Text(
+              '$count',
+              style: TextStyle(
+                color: color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ), // عدد بزرگتر
+            ),
+          ],
         ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.cyan.shade50,
-        appBar: AppBar(
-          title: const Text('سنگ، کاغذ، قیچی'),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.teal,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.teal),
-            onPressed: widget.onBackToMenu,
+  Widget _buildPlayerDisplay(String title, String emoji, Color bgColor) {
+    if (emoji.isEmpty)
+      return SizedBox(width: 80); // برای حفظ فضا حتی اگر خالی باشد
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: CupertinoColors.secondaryLabel,
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // شمارنده‌ها
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildCounter("برد", _userWins, Colors.green),
-                  _buildCounter("باخت", _computerWins, Colors.red),
-                  _buildCounter("مساوی", _draws, Colors.orange),
-                ],
-              ),
-
-              SizedBox(height: 20),
-
-              Text(
-                'یک گزینه انتخاب کن:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
+        SizedBox(height: 8),
+        ScaleTransition(
+          // استفاده از انیمیشن موجود
+          scale: _scaleAnimation,
+          child: Container(
+            padding: EdgeInsets.all(18), // پدینگ بیشتر برای دایره
+            decoration: BoxDecoration(
+              color: bgColor,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: CupertinoColors.systemGrey.withOpacity(0.25),
+                  blurRadius: 6,
+                  offset: Offset(0, 3),
                 ),
-              ),
+              ],
+            ),
+            child: Text(
+              emoji,
+              style: TextStyle(fontSize: 38, color: CupertinoColors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-              SizedBox(height: 16),
+  @override
+  Widget build(BuildContext context) {
+    Color resultDisplayColor = CupertinoColors.label;
+    if (_resultText.contains("بردید"))
+      resultDisplayColor = CupertinoColors.systemGreen;
+    else if (_resultText.contains("باخت"))
+      resultDisplayColor = CupertinoColors.systemRed;
+    else if (_resultText.contains("مساوی"))
+      resultDisplayColor = CupertinoColors.systemOrange;
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children:
-                    _choices.entries
-                        .map((e) => _buildChoiceButton(e.key, e.value))
-                        .toList(),
-              ),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: CupertinoPageScaffold(
+        backgroundColor: Color(0xFFF0F0F5), // همان پس زمینه صفحات قبل
+        navigationBar: CupertinoNavigationBar(
+          leading: CupertinoNavigationBarBackButton(
+            previousPageTitle: "منو",
+            onPressed: widget.onBackToMenu,
+            color: CupertinoColors.systemTeal,
+          ),
+          middle: Text(
+            'بازی!',
+            style: TextStyle(
+              color: CupertinoColors.systemTeal,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: CupertinoColors.white.withOpacity(
+            0.85,
+          ), // کمی شفاف‌تر
+          border: Border(
+            bottom: BorderSide(color: CupertinoColors.systemGrey5, width: 0.5),
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              16.0,
+              10.0,
+              16.0,
+              16.0,
+            ), // پدینگ متفاوت برای بالا
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween, // توزیع بهتر فضا
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // شمارنده‌ها
+                Row(
+                  children: [
+                    _buildCounter(
+                      "شما",
+                      _userWins,
+                      CupertinoColors.systemGreen,
+                    ),
+                    SizedBox(width: 10),
+                    _buildCounter(
+                      "مساوی",
+                      _draws,
+                      CupertinoColors.systemOrange,
+                    ),
+                    SizedBox(width: 10),
+                    _buildCounter(
+                      "کامپیوتر",
+                      _computerWins,
+                      CupertinoColors.systemRed,
+                    ),
+                  ],
+                ),
 
-              SizedBox(height: 32),
-
-              if (_playerChoice.isNotEmpty || _computerChoice.isNotEmpty)
-                FadeTransition(
-                  opacity: _scaleAnimation,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'شما',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.teal.shade300,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              _playerChoice,
+                // نمایش نتیجه یا پیام انتخاب
+                Container(
+                  height: 150, // ارتفاع ثابت برای بخش میانی
+                  child: Center(
+                    child:
+                        _resultText.isEmpty
+                            ? Text(
+                              'انتخاب کنید:',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 32,
-                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                color: CupertinoColors.systemTeal.withOpacity(
+                                  0.8,
+                                ),
                               ),
+                            )
+                            : Column(
+                              // نمایش انتخاب‌ها و نتیجه
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SlideTransition(
+                                  position: _slideAnimation,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      _buildPlayerDisplay(
+                                        'شما',
+                                        _playerChoiceEmoji,
+                                        CupertinoColors.systemTeal,
+                                      ),
+                                      Text(
+                                        "VS",
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: CupertinoColors.systemGrey2,
+                                        ),
+                                      ),
+                                      _buildPlayerDisplay(
+                                        'کامپیوتر',
+                                        _computerChoiceEmoji,
+                                        CupertinoColors.systemOrange,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 15),
+                                ScaleTransition(
+                                  scale: _scaleAnimation,
+                                  child: Text(
+                                    _resultText,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: resultDisplayColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
+                  ),
+                ),
+
+                // دکمه‌های انتخاب یا دکمه "بازی مجدد"
+                if (_resultText.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: CupertinoButton.filled(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'بازی مجدد دور',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                        ],
+                        ),
+                        onPressed: _resetRound,
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            'کامپیوتر',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.shade300,
-                              shape: BoxShape.circle,
-                            ),
+                    ),
+                  )
+                else
+                  Row(
+                    // دکمه های انتخاب سنگ کاغذ قیچی
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children:
+                        _choices.entries
+                            .map((e) => _buildChoiceButton(e.key, e.value))
+                            .toList(),
+                  ),
+
+                // تاریخچه بازی
+                Expanded(
+                  flex: 2, // فضای بیشتر برای تاریخچه
+                  child:
+                      _history.isEmpty
+                          ? Center(
                             child: Text(
-                              _computerChoice,
+                              "تاریخچه بازی اینجا نمایش داده می‌شود.",
                               style: TextStyle(
-                                fontSize: 32,
-                                color: Colors.white,
+                                color: CupertinoColors.systemGrey,
+                                fontSize: 14,
                               ),
                             ),
+                          )
+                          : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 15.0,
+                                  bottom: 8.0,
+                                  right: 5.0,
+                                ),
+                                child: Text(
+                                  "آخرین نتایج:",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: CupertinoColors.secondaryLabel,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: CupertinoColors.systemGrey5,
+                                    ),
+                                  ),
+                                  child: ListView.builder(
+                                    itemCount: _history.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 10,
+                                          horizontal: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border:
+                                              index < _history.length - 1
+                                                  ? Border(
+                                                    bottom: BorderSide(
+                                                      color:
+                                                          CupertinoColors
+                                                              .systemGrey5,
+                                                      width: 0.5,
+                                                    ),
+                                                  )
+                                                  : null,
+                                        ),
+                                        child: Text(
+                                          _history[index],
+                                          style: TextStyle(
+                                            color: CupertinoColors.label
+                                                .withOpacity(0.85),
+                                            fontSize: 13.5,
+                                          ),
+                                          textDirection: TextDirection.rtl,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                ),
+
+                SizedBox(height: 10),
+                // دکمه ریست کلی
+                CupertinoButton(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  color: CupertinoColors.systemRed.withOpacity(0.9),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        CupertinoIcons.trash_circle,
+                        color: CupertinoColors.white,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'شروع مجدد کل بازی',
+                        style: TextStyle(
+                          color: CupertinoColors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
+                  onPressed: _resetGameStats,
                 ),
-
-              SizedBox(height: 20),
-
-              if (_result.isNotEmpty)
-                ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: Text(
-                    _result,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          _result.contains("بردید")
-                              ? Colors.green
-                              : _result.contains("مساوی")
-                              ? Colors.orange
-                              : Colors.red,
-                    ),
-                  ),
-                ),
-
-              SizedBox(height: 20),
-
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _history.length,
-                  itemBuilder: (context, index) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: Offset(0, 0.3),
-                        end: Offset.zero,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: _controller,
-                          curve: Interval(
-                            (index / _history.length),
-                            1.0,
-                            curve: Curves.easeOut,
-                          ),
-                        ),
-                      ),
-                      child: Card(
-                        elevation: 2,
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          leading: Icon(Icons.history, color: Colors.teal),
-                          title: Text(
-                            _history[index],
-                            style: TextStyle(color: Colors.teal),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: ElevatedButton.icon(
-                        onPressed: _resetGame,
-                        icon: Icon(Icons.refresh),
-                        label: Text('ریست دور فعلی'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueGrey.shade200,
-                          foregroundColor: Colors.black,
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: ElevatedButton.icon(
-                        onPressed: _clearAll,
-                        icon: Icon(Icons.delete_forever),
-                        label: Text('حذف کلی'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red.shade200,
-                          foregroundColor: Colors.black,
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -767,7 +923,8 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _gameAnimationController.dispose();
+    // _audioPlayerGame.dispose();
     super.dispose();
   }
 }
