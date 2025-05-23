@@ -632,7 +632,7 @@ class AboutPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Text(
-                'این بازی با کلی ذوق و با استفاده از فریم‌ورک قدرتمند فلاتر توسط "توسعه‌دهنده خلاق شما" ساخته شده. هدفمون این بود که یه بازی ساده ولی خیلی سرگرم‌کننده و باحال بسازیم که لبخند رو لبتون بیاره.\n\nنسخه: 2.1 - Ultra Fun Edition\n\nهر گونه بازخورد یا ایده‌ای دارید، خوشحال میشیم بشنویم!',
+                'این بازی با کلی ذوق و با استفاده از فریم‌ورک قدرتمند فلاتر توسط "توسعه‌دهنده خلاق شما" ساخته شده. هدفمون این بود که یه بازی ساده ولی خیلی سرگرم‌کننده و باحال بسازیم که لبخند رو لبتون بیاره.\n\nنسخه: 2.1.0\n\nهر گونه بازخورد یا ایده‌ای دارید، خوشحال میشیم بشنویم!',
                 textAlign: TextAlign.center,
                 style: textTheme.bodyLarge,
               ),
@@ -908,7 +908,10 @@ class _RockPaperScissorsGameState extends State<RockPaperScissorsGame>
                     choiceData['label'] as String,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: isEnabled ? MyApp.onPrimaryColor : Colors.grey.shade600,
+                      color:
+                          isEnabled
+                              ? MyApp.onPrimaryColor
+                              : Colors.grey.shade600,
                       fontSize: 13.5,
                     ),
                   ),
